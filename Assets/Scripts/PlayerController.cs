@@ -16,7 +16,7 @@ public class PlayerController : MonoBehaviour
     public float maxForwardVelocity = 8;
     public float minForwardVelocity = 1;
 
-    private float curVel = 0;
+    public float curVel = 0;
 
     public Transform gazePointer;
 
@@ -47,29 +47,31 @@ public class PlayerController : MonoBehaviour
         {
             magnetThreshold = Input.compass.rawVector.magnitude - 100;
         }
+
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            OnStepDetected();
+        }
     }
 
 
     void FixedUpdate()
     {
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            OnStepDetected();
-        }
+        
         timeSinceLastStep += Time.fixedDeltaTime;
 
         if (timeSinceLastStep > 1)
         {
-            controller.targetVelocity.Set(0, 0, 0);
+            //controller.targetVelocity.Set(0, 0, 0);
         }
-        else
-        {
+
             if(curVel > 0)
-                curVel -= .1f;
+                curVel *= .95f;
             if (curVel < 0)
                 curVel = 0;
             controller.targetVelocity.Set(0, 0, curVel);
-        }
+        
+        
 
         
 
