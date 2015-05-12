@@ -19,7 +19,7 @@ public class StepDetector : MonoBehaviour
     private float curMax = Single.NegativeInfinity; //maximum value of the last dynamicThresholdNumSamples samples
     private float dynamicThreshold = 0; //the changing threshold to detect a step
 
-    private const float stepMinThreshold = .35f; //minimum threshold for a sample to be passed into the step detection stuff
+    private const float stepMinThreshold = .25f; //minimum threshold for a sample to be passed into the step detection stuff
     private float stepSampleOld = 0; //the last valid sample
     private float stepSampleNew = 0; //the potentially new valid sample, might = old sample if the input sample is below the minimum threshold
 
