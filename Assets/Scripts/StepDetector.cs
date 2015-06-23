@@ -19,7 +19,7 @@ public class StepDetector : MonoBehaviour
     private float curMax = Single.NegativeInfinity; //maximum value of the last dynamicThresholdNumSamples samples
     private float dynamicThreshold = 0; //the changing threshold to detect a step
 
-    private const float stepMinThreshold = .25f; //minimum threshold for a sample to be passed into the step detection stuff
+    private const float stepMinThreshold = .45f; //minimum threshold for a sample to be passed into the step detection stuff
     private float stepSampleOld = 0; //the last valid sample
     private float stepSampleNew = 0; //the potentially new valid sample, might = old sample if the input sample is below the minimum threshold
 
@@ -41,59 +41,60 @@ public class StepDetector : MonoBehaviour
 	
 	// Update is called once per frame
 	void Update () {
-	
+		//update step counter time
+		timeSinceLastDetectedStep += Time.deltaTime;
+
+		float upVector = GetUpwardsAcceleration(Input.gyro.userAcceleration);
+
+		//sample once per fixed update, sum 4 samples together and average them to smooth out noise, use the average value of every 4 sums in the step detection
+		if (filterNumSamples < filterNumSamplesToAverage)
+		{
+			filterTotalX += upVector;
+			//filterTotalY += Input.acceleration.y;
+			//filterTotalZ += Input.acceleration.z;
+			filterNumSamples++;
+		}
+		else
+		{
+			//use the largest of the 3 accelerations for step detection, since the phone might be in a lot of different orientations
+			float totalX = filterTotalX / filterNumSamplesToAverage;
+			//float totalY = filterTotalY / filterNumSamplesToAverage;
+			//float totalZ = filterTotalZ / filterNumSamplesToAverage;
+
+			//float largest = ReturnLargest(totalX, ReturnLargest(totalY, totalZ));
+
+			StepDetection(totalX);
+
+			//reset filter counter and values.
+			filterNumSamples = 0;
+			filterTotalX = 0;
+		}
+
+		//update the dynamic threshold every dynamicThresholdNumSamplesToUpdate steps
+		if (dynamicThresholdNumSamples < dynamicThresholdNumSamplesToUpdate)
+		{
+
+			if (upVector > curMax) curMax = upVector;
+			if (upVector < curMin) curMin = upVector;
+
+			dynamicThresholdNumSamples++;
+		}
+		else
+		{
+			dynamicThreshold = (curMax + curMin) / 2;
+
+			//accelText.text = dynamicThreshold.ToString();
+
+			curMin = Single.PositiveInfinity;
+			curMax = Single.NegativeInfinity;
+			dynamicThresholdNumSamples = 0;
+		}
 	}
 
     void FixedUpdate()
     {
-        //update step counter time
-        timeSinceLastDetectedStep += Time.fixedDeltaTime;
-
-        float upVector = GetUpwardsAcceleration(Input.gyro.userAcceleration);
-
-        //sample once per fixed update, sum 4 samples together and average them to smooth out noise, use the average value of every 4 sums in the step detection
-        if (filterNumSamples < filterNumSamplesToAverage)
-        {
-            filterTotalX += upVector;
-            //filterTotalY += Input.acceleration.y;
-            //filterTotalZ += Input.acceleration.z;
-            filterNumSamples ++;
-        }
-        else
-        {
-            //use the largest of the 3 accelerations for step detection, since the phone might be in a lot of different orientations
-            float totalX = filterTotalX / filterNumSamplesToAverage;
-            //float totalY = filterTotalY / filterNumSamplesToAverage;
-            //float totalZ = filterTotalZ / filterNumSamplesToAverage;
-
-            //float largest = ReturnLargest(totalX, ReturnLargest(totalY, totalZ));
-
-            StepDetection(totalX);
-
-            //reset filter counter and values.
-            filterNumSamples = 0;
-            filterTotalX = 0;
-        }
-
-        //update the dynamic threshold every dynamicThresholdNumSamplesToUpdate steps
-        if (dynamicThresholdNumSamples < dynamicThresholdNumSamplesToUpdate)
-        {
-
-            if (upVector > curMax) curMax = upVector;
-            if (upVector < curMin) curMin = upVector;
-
-            dynamicThresholdNumSamples ++;
-        }
-        else
-        {
-            dynamicThreshold = (curMax + curMin)/2;
-            
-            //accelText.text = dynamicThreshold.ToString();
-
-            curMin = Single.PositiveInfinity;
-            curMax = Single.NegativeInfinity;
-            dynamicThresholdNumSamples = 0;
-        }
+		
+       
 
     }
 

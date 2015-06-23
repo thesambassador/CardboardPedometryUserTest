@@ -24,6 +24,8 @@ public class PlayerController : MonoBehaviour
 	public bool movementToggled = false;
 	public bool lookDownToggle = false;
 
+	public AudioSource footstepSound;
+
 	// Use this for initialization
 	void Start ()
 	{
@@ -121,8 +123,10 @@ public class PlayerController : MonoBehaviour
 
     void OnStepDetected()
     {
+		
 	    if (useSteps && movementEnabled)
 	    {
+			footstepSound.Play();
 		    //Debug.Log("Time since last step: " + timeSinceLastStep);
 		    if (timeSinceLastStep > 1)
 			    curVel = minForwardVelocity;
@@ -140,6 +144,7 @@ public class PlayerController : MonoBehaviour
 		    controller.targetVelocity.Set(0, 0, curVel);
 
 		    timeSinceLastStep = 0;
+			//Debug.Log("Step");
 	    }
     }
 
