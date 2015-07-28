@@ -11,7 +11,7 @@ public class StepCounter : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-	    StepDetector.OnStepDetected += OnStepDetected;
+	    StepDetector.instance.OnStepDetected += OnStepDetected;
 	}
 	
 	// Update is called once per frame

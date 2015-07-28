@@ -27,7 +27,13 @@ public class StepDetector : MonoBehaviour
     //private float stepIntervalMax = 1.5f;
     private const float stepIntervalMin = .2f;
 
-    public static StepHandler OnStepDetected;
+    public StepHandler OnStepDetected;
+    public static StepDetector instance;
+
+    void Awake()
+    {
+        instance = this;
+    }
 
 	// Use this for initialization
 	void Start ()
@@ -89,6 +95,11 @@ public class StepDetector : MonoBehaviour
 			curMax = Single.NegativeInfinity;
 			dynamicThresholdNumSamples = 0;
 		}
+
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            OnStepDetected();
+        }
 	}
 
     void FixedUpdate()
